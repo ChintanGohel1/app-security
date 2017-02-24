@@ -3,6 +3,7 @@ package com.test.controller;
 import java.io.File;
 import java.nio.file.Paths;
 
+import com.response.UserResponse;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -16,7 +17,6 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.util.StringUtils;
 
 import com.Application;
-import com.dto.UserDTO;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.test.entities.AuthenticationRequest;
 import com.test.util.CustomRestTemplate;
@@ -85,10 +85,10 @@ public class Configuration {
 		try {
 			authenticationRequest = TestApiConfig.ADMIN_AUTHENTICATION_REQUEST;
 
-			ResponseEntity<UserDTO> authenticationResponse = client.postForEntity(
+			ResponseEntity<UserResponse> authenticationResponse = client.postForEntity(
 			        authenticationRoute,
 			        authenticationRequest,
-			        UserDTO.class
+					UserResponse.class
 			        );
 
 		} catch (Exception e) {
@@ -100,11 +100,6 @@ public class Configuration {
 	//		return RequestEntityBuilder.buildRequestEntityWithoutAuthenticationToken(authenticationRequest);
 	//	}
 
-	/**
-	 * @param list
-	 * @return
-	 * @return
-	 */
 	protected HttpEntity<Object> buildHeaderWithToken() {
 		System.out.println("client.authenticationToken = " + client.authenticationToken);
 		return RequestEntityBuilder.buildRequestEntityWithoutBody(this.client.authenticationToken);

@@ -3,7 +3,7 @@ package com.services;
 import java.util.List;
 
 
-import com.entities.Role;
+import com.entity.Role;
 import com.exceptions.AlreadyExist;
 import com.exceptions.EntityNotFound;
 

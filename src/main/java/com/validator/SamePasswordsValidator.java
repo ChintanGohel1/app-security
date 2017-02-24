@@ -1,19 +1,17 @@
 package com.validator;
 
+import com.request.CreateUserRequest;
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
 
-import com.dto.CreateUserDTO;
-import com.dto.UserDTO;
-
-public class SamePasswordsValidator implements ConstraintValidator<SamePasswords, CreateUserDTO> {
+public class SamePasswordsValidator implements ConstraintValidator<SamePasswords, CreateUserRequest> {
 
 	@Override
 	public void initialize(SamePasswords constraintAnnotation) {
 	}
 
 	@Override
-	public boolean isValid(CreateUserDTO value, ConstraintValidatorContext context) {
+	public boolean isValid(CreateUserRequest value, ConstraintValidatorContext context) {
 		if (value.getConfirmedPassword() == null) {
 			return true;
 		}

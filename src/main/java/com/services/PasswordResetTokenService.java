@@ -1,7 +1,7 @@
 package com.services;
 
-import com.entities.PasswordResetToken;
-import com.entities.User;
+import com.entity.PasswordResetToken;
+import com.entity.User;
 
 /**
  * @author Vinit Solanki

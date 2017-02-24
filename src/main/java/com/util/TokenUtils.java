@@ -2,8 +2,8 @@ package com.util;
 
 import java.time.Duration;
 
-import com.entities.AuthToken;
-import com.entities.PasswordResetToken;
+import com.entity.AuthToken;
+import com.entity.PasswordResetToken;
 
 /**
  * @author Vinit Solanki

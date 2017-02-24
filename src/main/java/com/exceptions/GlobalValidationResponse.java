@@ -23,7 +23,7 @@ import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.multipart.MultipartException;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
-import com.entities.AuthToken;
+import com.entity.AuthToken;
 import com.google.common.base.Splitter;
 import com.mail.SmtpMailSender;
 import com.services.AuthTokenService;

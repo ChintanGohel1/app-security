@@ -1,9 +1,7 @@
 package com.services;
 
-import java.util.Date;
-
-import com.entities.AuthToken;
-import com.entities.User;
+import com.entity.AuthToken;
+import com.entity.User;
 
 /**
  * @author Vinit Solanki

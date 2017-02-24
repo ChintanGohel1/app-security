@@ -7,21 +7,21 @@ import static org.junit.Assert.fail;
 
 import java.io.IOException;
 
+import com.entity.Role;
+import com.request.CreateUserRequest;
+import com.request.RoleRequest;
+import com.request.UserRequest;
+import com.response.RoleResponse;
+import com.response.UserResponse;
 import org.apache.log4j.Logger;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.HttpClientErrorException;
-
-import com.dto.CreateUserDTO;
-import com.dto.RoleDTO;
-import com.dto.UserDTO;
 import com.exceptions.ValidationError;
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
-import com.test.util.TestApiConfig;
 
 /**
  * @author Vinit Solanki
@@ -29,7 +29,8 @@ import com.test.util.TestApiConfig;
  */
 public class UserControllerTest extends Configuration {
 
-	private static UserDTO userVO;
+	private static UserRequest userRequest;
+	private static UserResponse userResponse;
 
 	private static final Logger log = Logger.getLogger(UserControllerTest.class);
 
@@ -59,7 +60,7 @@ public class UserControllerTest extends Configuration {
 	@Test
 	public void saveUserWithInvalidEmailTest() throws JsonParseException, JsonMappingException, IOException {
 
-		CreateUserDTO user = new CreateUserDTO();
+		CreateUserRequest user = new CreateUserRequest();
 		user.setFirstName("Ravi");
 		user.setLastName("Chaouhan");
 		user.setEmail("worngemail");
@@ -92,7 +93,7 @@ public class UserControllerTest extends Configuration {
 	@Test
 	public void saveUserWithDuplicateEmailTest() throws JsonParseException, JsonMappingException, IOException {
 
-		CreateUserDTO user = new CreateUserDTO();
+		CreateUserRequest user = new CreateUserRequest();
 		user.setFirstName("Diplicate Email");
 		user.setLastName("Test");
 		user.setEmail("vinit.solanki@indianic.com");
@@ -128,7 +129,7 @@ public class UserControllerTest extends Configuration {
 	@Test
 	public void saveUserCheckPasswordAndConfirmPasswordTest() throws JsonParseException, JsonMappingException, IOException {
 
-		CreateUserDTO user = new CreateUserDTO();
+		CreateUserRequest user = new CreateUserRequest();
 		user.setFirstName("Ravi");
 		user.setLastName("Chaouhan");
 		user.setEmail("vinit.solanki@gmail.com");
@@ -163,27 +164,30 @@ public class UserControllerTest extends Configuration {
 	@Test
 	public void saveUserTest() throws JsonParseException, JsonMappingException, IOException {
 
-		CreateUserDTO user = new CreateUserDTO();
+		CreateUserRequest user = new CreateUserRequest();
 		user.setFirstName("New User");
 		user.setLastName("Last Name");
 		user.setEmail("unique@gmail.com");
 		user.setPassword("admin");
 		user.setConfirmedPassword("admin");
 		user.setEnabled(Boolean.TRUE);
-		//user.setRole(new RoleDTO(13L));
+		user.setRole(new RoleResponse(1L));
 
 		try {
-			ResponseEntity<UserDTO> responseEntity = client.exchange(
+			ResponseEntity<UserResponse> responseEntity = client.exchange(
 			        "user",
 			        HttpMethod.POST,
 			        this.buildHeaderWithToken(user),
-			        UserDTO.class
+			        UserResponse.class
 			        );
 
-			userVO = responseEntity.getBody();
+			userResponse = responseEntity.getBody();
 
 			assertThat(responseEntity.getStatusCode(), is(HttpStatus.OK));
-			assertThat(userVO.getEmail(), is(user.getEmail()));
+			assertThat(userResponse.getEmail(), is(user.getEmail()));
+
+			//userRequest used in updateUserTest
+			userRequest = new UserRequest(userResponse.getId(), userResponse.getFirstName(),userResponse.getLastName(), userResponse.getEmail());
 
 		} catch (HttpClientErrorException e) {
 
@@ -203,28 +207,28 @@ public class UserControllerTest extends Configuration {
 	@Test
 	public void updateUserTest() throws JsonParseException, JsonMappingException, IOException {
 
-		assertNotNull("userVO Object should not null : check 'saveUserTest()'", userVO);
+		assertNotNull("userRequest Object should not null : check 'saveUserTest()'", userRequest);
 
-		userVO.setFirstName("VinitNew");
-		userVO.setRole(new RoleDTO(1L));
-		System.out.println("userVO = " + userVO);
-		System.out.println("userVO.getRole() = " + userVO.getRole());
+		userRequest.setFirstName("VinitNew");
+		userRequest.setRole(new RoleRequest(1L));
+		System.out.println("userRequest = " + userRequest);
+		System.out.println("userRequest.getRole() = " + userRequest.getRole());
 
 		try {
-			ResponseEntity<UserDTO> responseEntity = client.exchange(
-			        "user/" + userVO.getId(),
+			ResponseEntity<UserResponse> responseEntity = client.exchange(
+			        "user/" + userRequest.getId(),
 			        HttpMethod.PUT,
-			        this.buildHeaderWithToken(userVO),
-			        UserDTO.class
+			        this.buildHeaderWithToken(userRequest),
+			        UserResponse.class
 			        );
 
-			UserDTO responseUserVO = responseEntity.getBody();
+			UserResponse userResponse = responseEntity.getBody();
 
-			System.out.println("responseUserVO = " + responseUserVO);
+			System.out.println("userResponse = " + userResponse);
 
 			assertThat(responseEntity.getStatusCode(), is(HttpStatus.OK));
-			assertThat(userVO.getFirstName(), is(responseUserVO.getFirstName()));
-			assertThat(userVO.getRole().getId(), is(responseUserVO.getRole().getId()));
+			assertThat(userRequest.getFirstName(), is(userResponse.getFirstName()));
+			assertThat(userRequest.getRole().getId(), is(userResponse.getRole().getId()));
 
 		} catch (HttpClientErrorException e) {
 
@@ -242,11 +246,11 @@ public class UserControllerTest extends Configuration {
 	public void deleteUserTest() throws JsonParseException, JsonMappingException, IOException {
 
 		try {
-			ResponseEntity<UserDTO> responseEntity = client.exchange(
-			        "user/" + userVO.getId(),
+			ResponseEntity<UserResponse> responseEntity = client.exchange(
+			        "user/" + userRequest.getId(),
 			        HttpMethod.DELETE,
 			        this.buildHeaderWithToken(),
-			        UserDTO.class
+			        UserResponse.class
 			        );
 
 			assertThat(responseEntity.getStatusCode(), is(HttpStatus.OK));

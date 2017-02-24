@@ -20,7 +20,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.util.StringUtils;
 
-import com.entities.AuthToken;
+import com.entity.AuthToken;
 import com.services.AuthTokenService;
 import com.util.Constants;
 import com.util.TokenUtils;
@@ -40,10 +40,12 @@ public class AuthenticationTokenFilter extends UsernamePasswordAuthenticationFil
 	@Override
 	public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
 
+		long startTime = System.currentTimeMillis();
+
 		HttpServletRequest httpRequest = (HttpServletRequest) request;
 		HttpServletResponse httpResponse = (HttpServletResponse) response;
 
-		System.out.println("in Filter | " + httpRequest.getRequestURI());
+		//System.out.println("in Filter | " + httpRequest.getRequestURI());
 
 		String token = httpRequest.getHeader(TokenUtils.TOKEN_HEADER);
 
@@ -55,6 +57,7 @@ public class AuthenticationTokenFilter extends UsernamePasswordAuthenticationFil
 
 		if (StringUtils.hasText(token)) {
 
+			//TODO : need to add token on cache and verfiy token on cache, If cache dont have token then only check token on database.
 			AuthToken authToken = authTokenService.findFistByTokenAndRemoteAddress(token, httpRequest.getRemoteAddr());
 
 			if (TokenUtils.isValidAuthToken(authToken) && null == SecurityContextHolder.getContext().getAuthentication()) {
@@ -68,23 +71,24 @@ public class AuthenticationTokenFilter extends UsernamePasswordAuthenticationFil
 					SecurityContextHolder.getContext().setAuthentication(authentication);
 
 					// Refresh Token : If Required to refresh token on each request otherwise comment this code.
-					if (!httpRequest.getRequestURI().equals(Constants.LOGOUT_URL))
-					{
-						token = TokenUtils.refreshToken();
-						authToken.setToken(token);
-						authToken.setUpdatedOn(new Date());
-						authTokenService.save(authToken);
-
-						Cookie cookie = new Cookie(TokenUtils.TOKEN_HEADER, token); // Not necessary, but saves bandwidth.
-						cookie.setPath("/");
-						cookie.setMaxAge(TokenUtils.TOKEN_EXPIRATION_TIME.intValue());
-						cookie.setDomain("localhost");
-						httpResponse.addCookie(cookie);
-					}
+//					if (!httpRequest.getRequestURI().equals(Constants.LOGOUT_URL))
+//					{
+//						token = TokenUtils.refreshToken();
+//						authToken.setToken(token);
+//						authToken.setUpdatedOn(new Date());
+//						authTokenService.save(authToken);
+//
+//						Cookie cookie = new Cookie(TokenUtils.TOKEN_HEADER, token); // Not necessary, but saves bandwidth.
+//						cookie.setPath("/");
+//						cookie.setMaxAge(TokenUtils.TOKEN_EXPIRATION_TIME.intValue());
+//						cookie.setDomain("localhost");
+//						httpResponse.addCookie(cookie);
+//					}
 				}
 			}
 		}
-
+		long endTime = System.currentTimeMillis();
+		System.out.println("Execute time : " + (startTime - endTime));
 		//ServletResponse servletResponse = (ServletResponse) httpResponse;
 		//ServletRequest servletRequest = (ServletRequest) httpRequest;
 		chain.doFilter(request, response);

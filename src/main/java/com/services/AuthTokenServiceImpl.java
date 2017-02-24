@@ -2,14 +2,13 @@ package com.services;
 
 import java.util.Date;
 
+import com.repository.TokenRepository;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import com.dao.TokenDAO;
-import com.entities.AuthToken;
-import com.entities.User;
+import com.entity.AuthToken;
+import com.entity.User;
 
 /**
  * @author Vinit Solanki
@@ -22,7 +21,7 @@ public class AuthTokenServiceImpl implements AuthTokenService {
 	private static final Logger log = Logger.getLogger(AuthTokenServiceImpl.class);
 
 	@Autowired
-	private TokenDAO authTokenDAO;
+	private TokenRepository authTokenDAO;
 
 	@Override
 	public AuthToken save(final AuthToken authToken) {

@@ -101,7 +101,7 @@ public class CustomRestTemplate extends RestTemplate {
 	/**
 	 * @param absolutePath
 	 * @param request
-	 * @param class1
+	 * @param responseType
 	 * @return
 	 */
 	public ResponseEntity<?> exchange(String absolutePath, HttpEntity<MultiValueMap<String, Object>> request, Class<Object> responseType) {

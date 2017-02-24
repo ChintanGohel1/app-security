@@ -2,14 +2,12 @@ package com.services;
 
 import java.util.Date;
 
+import com.repository.PasswordResetTokenRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import com.dao.PasswordResetTokenDAO;
-import com.entities.PasswordResetToken;
-import com.entities.User;
-import com.util.TokenUtils;
+import com.entity.PasswordResetToken;
+import com.entity.User;
 
 /**
  * @author Vinit Solanki
@@ -20,7 +18,7 @@ import com.util.TokenUtils;
 public class PasswordResetTokenServiceImpl implements PasswordResetTokenService {
 
 	@Autowired
-	private PasswordResetTokenDAO passwordResetTokenDao;
+	private PasswordResetTokenRepository passwordResetTokenDao;
 
 	@Override
 	public PasswordResetToken save(PasswordResetToken passwordResetToken) {

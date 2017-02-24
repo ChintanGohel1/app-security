@@ -6,8 +6,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.dao.PublisherRepository;
-import com.entities.Publisher;
+import com.repository.PublisherRepository;
+import com.entity.Publisher;
 
 /**
  * @author Vinit Solanki

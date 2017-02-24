@@ -3,16 +3,16 @@ package com.services;
 import java.util.HashMap;
 import java.util.List;
 import java.util.stream.Collectors;
+import com.request.CreateUserRequest;
+import com.request.UserRequest;
+import com.response.UserResponse;
+import com.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import com.dao.RoleDAO;
-import com.dao.UserDAO;
-import com.dto.CreateUserDTO;
-import com.dto.UserDTO;
-import com.entities.User;
+import com.entity.User;
 import com.exceptions.AlreadyExist;
 import com.exceptions.EntityNotFound;
 import com.google.common.base.Joiner;
@@ -27,7 +27,7 @@ import com.util.PropertiesUtil;
 public class UserServiceImpl implements UserService {
 
 	@Autowired
-	private UserDAO userDAO;
+	private UserRepository userRepository;
 
 	@Autowired
 	private RoleService roleService;
@@ -36,17 +36,17 @@ public class UserServiceImpl implements UserService {
 	public User loadUserByUsername(String username)
 	        throws UsernameNotFoundException {
 
-		return userDAO.findByUsername(username);
+		return userRepository.findByUsername(username);
 
 	}
 
 	@Override
-	public UserDTO findByEmail(String email) {
+	public UserResponse findByEmail(String email) {
 
-		User user = userDAO.findByEmail(email);
+		User user = userRepository.findByEmail(email);
 
 		if (null != user) {
-			return new UserDTO(user.getId(), user.getFirstName(), user.getLastName(), user.getEmail(), user.getRole());
+			return new UserResponse(user.getId(), user.getFirstName(), user.getLastName(), user.getEmail(), user.getRole());
 		} else {
 			throw new EntityNotFound("User not found.");
 		}
@@ -54,14 +54,14 @@ public class UserServiceImpl implements UserService {
 	}
 
 	@Override
-	public UserDTO save(CreateUserDTO userVo) throws AlreadyExist {
+	public UserResponse save(CreateUserRequest createUserRequest) throws AlreadyExist {
 
 		System.out.println("Save UserService");
-		System.out.println("userVo.getId() = " + userVo.getId());
-		System.out.println("userVo.getFirstName() = " + userVo.getFirstName());
-		System.out.println("userVo.getRole() = " + userVo.getRole());
+		System.out.println("createUserRequest.getId() = " + createUserRequest.getId());
+		System.out.println("createUserRequest.getFirstName() = " + createUserRequest.getFirstName());
+		System.out.println("createUserRequest.getRole() = " + createUserRequest.getRole());
 
-		User user = new User(userVo);
+		User user = new User(createUserRequest);
 
 		System.out.println("Save UserService");
 		System.out.println("user.getId() = " + user.getId());
@@ -75,10 +75,10 @@ public class UserServiceImpl implements UserService {
 			if (user.getId() == null)
 				user.setId(0L);
 
-			if (userVo.getRole() != null)
-				user.setRole(roleService.findOne(userVo.getRole().getId()));
+			if (createUserRequest.getRole() != null)
+				user.setRole(roleService.findOne(createUserRequest.getRole().getId()));
 
-			return new UserDTO(userDAO.save(user));
+			return new UserResponse(userRepository.save(user));
 
 		} else {
 
@@ -91,22 +91,22 @@ public class UserServiceImpl implements UserService {
 	}
 
 	@Override
-	public List<UserDTO> findAll() {
+	public List<UserResponse> findAll() {
 
-		List<User> users = userDAO.findAll();
+		List<User> users = userRepository.findAll();
 
-		List<UserDTO> userVOs = users.stream().map(user -> new UserDTO(user.getId(), user.getFirstName(), user.getLastName(), user.getEmail(), user.getRole())).collect(Collectors.toList());
+		List<UserResponse> usersResponse = users.stream().map(user -> new UserResponse(user.getId(), user.getFirstName(), user.getLastName(), user.getEmail(), user.getRole())).collect(Collectors.toList());
 
-		return userVOs;
+		return usersResponse;
 	}
 
 	@Override
-	public UserDTO findOne(Long id) throws EntityNotFound {
+	public UserResponse findOne(Long id) throws EntityNotFound {
 
-		User user = userDAO.findOne(id);
+		User user = userRepository.findOne(id);
 
 		if (null != user) {
-			return new UserDTO(user);
+			return new UserResponse(user);
 		} else {
 			throw new EntityNotFound("User not found.");
 		}
@@ -117,21 +117,21 @@ public class UserServiceImpl implements UserService {
 	public void delete(Long id) {
 
 		if (id != null)
-			userDAO.delete(id);
+			userRepository.delete(id);
 
 	}
 
 	@Override
-	public void delete(UserDTO userVo) {
+	public void delete(UserResponse userRequest) {
 
-		if (userVo != null)
-			userDAO.delete(new User(userVo));
+		if (userRequest != null)
+			userRepository.delete(new User(userRequest));
 
 	}
 
 	public boolean isExistUser(User user) {
 
-		User savedUser = userDAO.findByEmail(user.getEmail());
+		User savedUser = userRepository.findByEmail(user.getEmail());
 
 		if (null != savedUser && savedUser.getId() != user.getId()) {
 			return true;
@@ -141,24 +141,21 @@ public class UserServiceImpl implements UserService {
 
 	}
 
-	/* (non-Javadoc)
-	 * @see com.services.UserService#update(com.vo.UserVO)
-	 */
 	@Override
-	public UserDTO update(UserDTO userVo) throws AlreadyExist {
+	public UserResponse update(UserRequest userRequest) throws AlreadyExist {
 
-		//User user = new User(userVo);
-		User user = userDAO.findOne(userVo.getId());
+		//User user = new User(userRequest);
+		User user = userRepository.findOne(userRequest.getId());
 
 		if (!isExistUser(user)) {
 
-			user.setEmail(userVo.getEmail());
-			user.setFirstName(userVo.getFirstName());
-			user.setLastName(userVo.getLastName());
-			user.setEnabled(userVo.isEnabled());
-			user.setRole(roleService.findOne(userVo.getRole().getId()));
+			user.setEmail(userRequest.getEmail());
+			user.setFirstName(userRequest.getFirstName());
+			user.setLastName(userRequest.getLastName());
+			user.setEnabled(userRequest.isEnabled());
+			user.setRole(roleService.findOne(userRequest.getRole().getId()));
 
-			return new UserDTO(userDAO.save(user));
+			return new UserResponse(userRepository.save(user));
 
 		} else {
 

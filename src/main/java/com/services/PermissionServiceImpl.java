@@ -2,13 +2,11 @@ package com.services;
 
 import java.util.HashMap;
 import java.util.List;
-
+import com.repository.PermissionRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import com.dao.PermissionDAO;
-import com.entities.Permission;
+import com.entity.Permission;
 import com.exceptions.AlreadyExist;
 import com.exceptions.EntityNotFound;
 import com.google.common.base.Joiner;
@@ -22,7 +20,7 @@ import com.google.common.base.Joiner;
 public class PermissionServiceImpl implements PermissionService {
 
 	@Autowired
-	private PermissionDAO permissionDAO;
+	private PermissionRepository permissionDAO;
 
 	@Override
 	public Permission save(Permission permission) throws AlreadyExist {
