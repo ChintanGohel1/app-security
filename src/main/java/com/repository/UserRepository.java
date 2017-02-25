@@ -19,8 +19,6 @@ public interface UserRepository extends PagingAndSortingRepository<User, Long> {
 
 	}
 
-	public Page<User> findByFirstName(Pageable pageable, String name);
-
 	//public List<User> findByFirstName(String name);
 
 	public List<User> findAll();

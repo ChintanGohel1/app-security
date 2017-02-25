@@ -1,22 +1,17 @@
 package com.controller;
 
-import java.util.List;
-
-import javax.validation.Valid;
-
+import com.entity.Permission;
+import com.request.PageRequest;
+import com.services.PermissionService;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
-import com.entity.Permission;
-import com.services.PermissionService;
+import javax.validation.Valid;
 
 /**
  * @author Vinit Solanki
@@ -34,9 +29,9 @@ public class PermissionController {
 
 	@RequestMapping(method = RequestMethod.GET)
 	@PreAuthorize("hasAuthority('USER_LIST_GET')")
-	public ResponseEntity<?> findAll() {
+	public ResponseEntity<?> findAll(PageRequest pageable) {
 
-		List<Permission> permissions = permissionService.findAll();
+		Page<Permission> permissions = permissionService.findAll(pageable);
 
 		return ResponseEntity.ok(permissions);
 	}

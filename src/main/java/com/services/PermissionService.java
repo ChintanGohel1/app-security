@@ -6,6 +6,9 @@ import java.util.List;
 import com.entity.Permission;
 import com.exceptions.AlreadyExist;
 import com.exceptions.EntityNotFound;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 
 /**
  * @author Vinit Solanki
@@ -15,7 +18,7 @@ public interface PermissionService {
 
 	Permission save(Permission permission) throws AlreadyExist;
 
-	List<Permission> findAll();
+	Page<Permission> findAll(Pageable pageable);
 
 	Permission findOne(Long id) throws EntityNotFound;
 

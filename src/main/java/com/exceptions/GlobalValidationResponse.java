@@ -36,11 +36,11 @@ import com.util.TokenUtils;
 @ControllerAdvice
 public class GlobalValidationResponse extends ResponseEntityExceptionHandler {
 
-	@Autowired
-	private SmtpMailSender smtpMailSender;
-
-	@Autowired
-	private AuthTokenService authTokenService;
+//	@Autowired
+//	private SmtpMailSender smtpMailSender;
+//
+//	@Autowired
+//	private AuthTokenService authTokenService;
 
 	HashMap<String, String> responseMessage = new HashMap<String, String>();
 
@@ -95,18 +95,18 @@ public class GlobalValidationResponse extends ResponseEntityExceptionHandler {
 
 		responseMessage.put("message", "Unauthorized");
 
-		//comment this code if you not required specific reason for the unauthorized.
-		String token = request.getHeader(TokenUtils.TOKEN_HEADER);
-		if (!StringUtils.isEmpty(token))
-		{
-			AuthToken authToken = authTokenService.findFistByTokenAndRemoteAddress(token, request.getRemoteAddr());
-			if (null != authToken && TokenUtils.isTokenExpired(authToken)) {
-
-				responseMessage.put("message", "token expired");
-
-			}
-		}
-
+//		//comment this code if you not required specific reason for the unauthorized.
+//		String token = request.getHeader(TokenUtils.TOKEN_HEADER);
+//		if (!StringUtils.isEmpty(token))
+//		{
+//			AuthToken authToken = authTokenService.findFistByTokenAndRemoteAddress(token, request.getRemoteAddr());
+//			if (null != authToken && TokenUtils.isTokenExpired(authToken)) {
+//
+//				responseMessage.put("message", "token expired");
+//
+//			}
+//		}
+//
 		return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ValidationError(responseMessage));
 
 	}

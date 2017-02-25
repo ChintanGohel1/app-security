@@ -1,9 +1,12 @@
 package com.services;
 
 import java.util.HashMap;
-import java.util.List;
+
 import com.repository.PermissionRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import com.entity.Permission;
@@ -31,16 +34,16 @@ public class PermissionServiceImpl implements PermissionService {
 
 		} else {
 
-			HashMap<String, String> mapErrors = new HashMap<String, String>();
-			mapErrors.put("email", "Permission already Exist.");
+			HashMap<String, String> mapErrors = new HashMap<String, String>(){{put("email", "Permission already Exist.");}};
+			//mapErrors.put("email", "Permission already Exist.");
 			throw new AlreadyExist(Joiner.on(" , ").withKeyValueSeparator(":").join(mapErrors));
 		}
 
 	}
 
 	@Override
-	public List<Permission> findAll() {
-		return permissionDAO.findAll();
+	public Page<Permission> findAll(Pageable pageable) {
+		return permissionDAO.findAll(pageable);
 	}
 
 	@Override
